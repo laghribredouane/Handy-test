@@ -1,0 +1,6 @@
+{
+  "name": "NetField Handy",
+  "description": "Professional cellular RF measurement and drive test tool inspired by Nemo Handy. Real-time 5G/4G cell telemetry, RSRP/RSRQ/SINR monitoring, GPS drive test route logging, speed & ping testing, and CSV export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
