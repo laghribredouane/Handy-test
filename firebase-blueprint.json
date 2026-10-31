@@ -1,0 +1,52 @@
+{
+  "entities": {
+    "Survey": {
+      "title": "Drive Test Survey",
+      "description": "Drive test survey record with RF cellular telemetry measurements",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique survey identifier" },
+        "userId": { "type": "string", "description": "UID of the owning authenticated engineer" },
+        "name": { "type": "string", "description": "Descriptive title of the drive test session" },
+        "networkType": { "type": "string", "description": "Cellular RAT type (e.g., 5G, LTE, 3G, GSM)" },
+        "operator": { "type": "string", "description": "Mobile network operator name" },
+        "avgRsrp": { "type": "number", "description": "Average RSRP signal level in dBm" },
+        "avgSinr": { "type": "number", "description": "Average SINR signal quality in dB" },
+        "pci": { "type": "number", "description": "Primary Physical Cell ID" },
+        "band": { "type": "string", "description": "Operating cellular frequency band" },
+        "pointCount": { "type": "number", "description": "Total GPS telemetry points logged in session" },
+        "status": { "type": "string", "description": "Survey session status: active or completed" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp evaluated by server" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp evaluated by server" }
+      },
+      "required": ["userId", "name", "networkType", "createdAt"]
+    },
+    "Diagnostic": {
+      "title": "Network Diagnostic Result",
+      "description": "Speed test, latency, ping and RF diagnostic verdict result",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique diagnostic identifier" },
+        "userId": { "type": "string", "description": "UID of the authenticated user" },
+        "targetServer": { "type": "string", "description": "Target server host for speed/ping test" },
+        "latencyMs": { "type": "number", "description": "Average ping latency in milliseconds" },
+        "downloadSpeedMbps": { "type": "number", "description": "Measured download throughput in Mbps" },
+        "jitterMs": { "type": "number", "description": "Measured network packet jitter in ms" },
+        "packetLossPercent": { "type": "number", "description": "Measured packet loss percentage" },
+        "rfVerdict": { "type": "string", "description": "RF Quality and diagnostic verdict message" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp evaluated by server" }
+      },
+      "required": ["userId", "targetServer", "latencyMs", "downloadSpeedMbps", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/surveys/{surveyId}": {
+      "schema": "Survey",
+      "description": "Collection of drive test surveys owned and managed by authenticated engineers"
+    },
+    "/diagnostics/{diagnosticId}": {
+      "schema": "Diagnostic",
+      "description": "Collection of network ping, speed test, and diagnostic logs"
+    }
+  }
+}

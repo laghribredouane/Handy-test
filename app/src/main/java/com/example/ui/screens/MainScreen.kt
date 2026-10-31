@@ -26,6 +26,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CellTower
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Lock
@@ -35,6 +37,9 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Stop
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ui.auth.AuthViewModel
+import com.example.ui.screens.CloudSyncDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -88,10 +93,13 @@ enum class HandyNavTab(val label: String, val icon: ImageVector) {
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
+    authViewModel: AuthViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
+    val currentUser by authViewModel.currentUser.collectAsState()
+    var showCloudSyncDialog by remember { mutableStateOf(false) }
 
     val servingCell by viewModel.servingCell.collectAsState()
     val neighbors by viewModel.neighbors.collectAsState()
@@ -193,8 +201,33 @@ fun MainScreen(
                         }
                     }
 
-                    // Lock & Recording Action Buttons
+                    // Lock, Cloud & Recording Action Buttons
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button(
+                            onClick = { showCloudSyncDialog = true },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (currentUser != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .padding(end = 6.dp)
+                                .testTag("top_cloud_button")
+                        ) {
+                            Icon(
+                                if (currentUser != null) Icons.Default.CloudDone else Icons.Default.Cloud,
+                                contentDescription = "Cloud Firebase",
+                                tint = if (currentUser != null) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (currentUser != null) "Cloud" else "Connexion",
+                                color = if (currentUser != null) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+
                         Button(
                             onClick = { showLockDialog = true },
                             colors = ButtonDefaults.buttonColors(
@@ -433,6 +466,16 @@ fun MainScreen(
             currentSettings = lockSettings,
             onApplySettings = { viewModel.setNetworkLocks(it) },
             onDismiss = { showLockDialog = false }
+        )
+    }
+
+    if (showCloudSyncDialog) {
+        CloudSyncDialog(
+            authViewModel = authViewModel,
+            currentUser = currentUser,
+            currentSignal = servingCell,
+            diagnosticState = diagnosticState,
+            onDismiss = { showCloudSyncDialog = false }
         )
     }
 }
